@@ -39,7 +39,7 @@ internal sealed class FocusFlowApp : TesseraApp
     // Action panel - tells user what to do
     private readonly Label _actionPanel = new()
     {
-        Title = "action",
+        Title = "next",
         Border = BorderStyle.Rounded,
         Padding = Thickness.Symmetric(1, 0)
     };
@@ -72,33 +72,20 @@ internal sealed class FocusFlowApp : TesseraApp
             case KeyPressed key2 when key2.IsCharacter('c', ModifierKeys.Ctrl):
                 return TesseraEffects.Quit;
 
-            // SPACE = main action (start/pause)
+            // SPACE = start/pause
             case KeyPressed key when key.IsCharacter(' '):
             case KeyPressed key2 when key2.Is(Key.Enter):
                 _state.ToggleRunning();
                 return null;
 
-            // R = reset current timer
+            // R = reset current timer (stay in same mode)
             case KeyPressed key when key.IsCharacter('r'):
                 _state.Reset();
                 return null;
 
-            // S = skip to next phase
+            // S = skip to next phase in the cycle
             case KeyPressed key when key.IsCharacter('s'):
                 _state.Skip();
-                return null;
-
-            // 1/2/3 = quick switch modes (stops timer, resets)
-            case KeyPressed key when key.IsCharacter('1'):
-                _state.SetMode(TimerMode.Work);
-                return null;
-
-            case KeyPressed key when key.IsCharacter('2'):
-                _state.SetMode(TimerMode.ShortBreak);
-                return null;
-
-            case KeyPressed key when key.IsCharacter('3'):
-                _state.SetMode(TimerMode.LongBreak);
                 return null;
 
             case TickMessage:
@@ -125,14 +112,14 @@ internal sealed class FocusFlowApp : TesseraApp
                 {
                     stack.Weighted(1, _timerPanel);
                     stack.Fixed(4, _progressBar);
-                    stack.Fixed(6, _actionPanel);
+                    stack.Fixed(5, _actionPanel);
                 }));
 
                 // Right side: Stats + Keys
                 main.Weighted(1, right => right.Column(stack =>
                 {
                     stack.Weighted(1, _statsCard);
-                    stack.Fixed(7, _keysPanel);
+                    stack.Fixed(6, _keysPanel);
                 }), new Thickness(1, 0, 0, 0));
             }));
             window.Footer(1, _footer);
@@ -177,11 +164,11 @@ internal sealed class FocusFlowApp : TesseraApp
 
     private void RefreshControls()
     {
-        // Timer panel - show current state clearly
+        // Timer panel - show current phase
         var modeText = _state.Mode switch
         {
-            TimerMode.Work => "🔴 FOCUS TIME",
-            TimerMode.ShortBreak => "🟢 SHORT BREAK",
+            TimerMode.Work => "🔴 FOCUS",
+            TimerMode.ShortBreak => "🟢 BREAK",
             TimerMode.LongBreak => "🟣 LONG BREAK",
             _ => "FOCUS"
         };
@@ -207,7 +194,15 @@ internal sealed class FocusFlowApp : TesseraApp
         _progressBar.SetValue(_state.Progress);
         _progressBar.FillStyle = FocusFlowTheme.ModeBar(_state.Mode);
 
-        // Action panel - clear instruction
+        // Action panel - show what happens next
+        var nextPhase = _state.Mode switch
+        {
+            TimerMode.Work => "→ short break (5m)",
+            TimerMode.ShortBreak => "→ focus time (25m)",
+            TimerMode.LongBreak => "→ focus time (25m)",
+            _ => "→ break"
+        };
+
         string actionText;
         TesseraStyle actionStyle;
 
@@ -218,37 +213,34 @@ internal sealed class FocusFlowApp : TesseraApp
         }
         else if (_state.IsRunning)
         {
-            actionText = "timer running... [SPACE] to pause";
-            actionStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Yellow).WithBold();
+            actionText = $"when done: {nextPhase}";
+            actionStyle = FocusFlowTheme.Foreground(FocusFlowTheme.FgDim);
         }
         else
         {
-            actionText = "[SPACE] resume  [R] reset  [S] skip";
+            actionText = "[SPACE] resume  [S] skip to next";
             actionStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Cyan).WithBold();
         }
 
         _actionPanel.Text = string.Join('\n',
             "",
-            $"  {actionText}",
-            "",
-            $"  switch: [1] focus  [2] break  [3] long");
+            $"  {actionText}");
         _actionPanel.TextStyle = actionStyle;
 
         // Stats
         _statsCard.SetItems(_state.BuildStats());
 
-        // Keys panel
+        // Keys panel - simple controls only
         _keysPanel.Text = string.Join('\n',
             "",
             "  [SPACE]  start / pause",
             "  [R]      reset timer",
             "  [S]      skip to next",
-            "  [1/2/3]  switch mode",
             "  [Q]      quit");
 
         // Footer
         _footer.LeftText = $" focusflow │ {_state.ModeDisplay.ToLowerInvariant()} ";
-        _footer.RightText = $" {_state.CompletedSessions} sessions │ {_state.TotalWorkMinutes}m total ";
+        _footer.RightText = $" {_state.CompletedSessions} pomodoros │ {_state.TotalWorkMinutes}m focused ";
     }
 }
 
