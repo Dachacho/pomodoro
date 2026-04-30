@@ -5,23 +5,24 @@ namespace FocusFlow;
 
 internal static class FocusFlowTheme
 {
-    // Gruvbox Dark color palette
-    private const int Bg0 = 0x282828;
-    private const int Bg1 = 0x3c3836;
-    private const int Bg2 = 0x504945;
-    private const int Bg3 = 0x665c54;
-    private const int Fg0 = 0xfbf1c7;
-    private const int Fg1 = 0xebdbb2;
-    private const int Fg2 = 0xd5c4a1;
-    private const int Fg3 = 0xbdae93;
-    private const int Fg4 = 0xa89984;
-    private const int Red = 0xfb4934;
-    private const int Green = 0xb8bb26;
-    private const int Yellow = 0xfabd2f;
-    private const int Blue = 0x83a598;
-    private const int Purple = 0xd3869b;
-    private const int Aqua = 0x8ec07c;
-    private const int Orange = 0xfe8019;
+    // Gruvbox Dark palette
+    public const int Bg0 = 0x282828;
+    public const int Bg1 = 0x3c3836;
+    public const int Bg2 = 0x504945;
+    public const int Bg3 = 0x665c54;
+    public const int Bg4 = 0x7c6f64;
+    public const int Fg0 = 0xfbf1c7;
+    public const int Fg1 = 0xebdbb2;
+    public const int Fg2 = 0xd5c4a1;
+    public const int Fg3 = 0xbdae93;
+    public const int Fg4 = 0xa89984;
+    public const int Red = 0xfb4934;
+    public const int Green = 0xb8bb26;
+    public const int Yellow = 0xfabd2f;
+    public const int Blue = 0x83a598;
+    public const int Purple = 0xd3869b;
+    public const int Aqua = 0x8ec07c;
+    public const int Orange = 0xfe8019;
 
     public static TesseraTheme Default => new()
     {
@@ -30,7 +31,7 @@ internal static class FocusFlowTheme
             Primary = Foreground(Fg1),
             Secondary = Foreground(Fg3),
             Muted = Foreground(Fg4),
-            Inverse = ForegroundBackground(Bg0, Fg1)
+            Inverse = ForegroundBackground(Bg0, Fg0)
         },
         Surface = new TesseraThemeSurfaceTokens
         {
@@ -92,29 +93,22 @@ internal static class FocusFlowTheme
             .WithBackground(AnsiColor.Rgb(bgR, bgG, bgB));
     }
 
-    public static TesseraStyle GetModeStyle(TimerMode mode) => mode switch
+    public static TesseraStyle Chip(int fg, int bg)
     {
-        TimerMode.Work => Foreground(Red).WithBold(),
-        TimerMode.ShortBreak => Foreground(Green).WithBold(),
-        TimerMode.LongBreak => Foreground(Purple).WithBold(),
-        _ => Foreground(Red).WithBold()
-    };
+        return ForegroundBackground(fg, bg).WithBold();
+    }
 
-    public static TesseraStyle GetModeFill(TimerMode mode) => mode switch
-    {
-        TimerMode.Work => ForegroundBackground(Bg0, Red),
-        TimerMode.ShortBreak => ForegroundBackground(Bg0, Green),
-        TimerMode.LongBreak => ForegroundBackground(Bg0, Purple),
-        _ => ForegroundBackground(Bg0, Red)
-    };
-
-    public static int GetModeColor(TimerMode mode) => mode switch
+    public static int ModeColor(TimerMode mode) => mode switch
     {
         TimerMode.Work => Red,
         TimerMode.ShortBreak => Green,
         TimerMode.LongBreak => Purple,
         _ => Red
     };
+
+    public static TesseraStyle ModeStyle(TimerMode mode) => Foreground(ModeColor(mode)).WithBold();
+
+    public static TesseraStyle ModeFill(TimerMode mode) => ForegroundBackground(Bg0, ModeColor(mode)).WithBold();
 
     private static (byte R, byte G, byte B) Split(int color)
     {
