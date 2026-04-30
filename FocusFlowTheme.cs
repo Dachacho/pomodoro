@@ -5,25 +5,24 @@ namespace FocusFlow;
 
 internal static class FocusFlowTheme
 {
-    // Bright colors for transparent terminals
-    public const int Bg = 0x1a1a2e;
-    public const int BgPanel = 0x16213e;
-    public const int BgHighlight = 0x0f3460;
+    // Gruvbox high contrast - using bright variants
+    public const int Bg = 0x1d2021;      // dark0_hard
+    public const int BgPanel = 0x282828;  // dark0
+    public const int BgHighlight = 0x3c3836; // dark1
 
-    // Bright, saturated foreground colors
-    public const int Fg = 0xffffff;
-    public const int FgDim = 0xcccccc;
-    public const int FgMuted = 0x888888;
+    // Bright foregrounds for visibility on transparent
+    public const int Fg = 0xfbf1c7;       // light0
+    public const int FgDim = 0xebdbb2;    // light1
+    public const int FgMuted = 0xd5c4a1;  // light2
 
-    // Vivid accent colors - high saturation for visibility
-    public const int Cyan = 0x00fff5;
-    public const int Magenta = 0xff00ff;
-    public const int Green = 0x00ff88;
-    public const int Red = 0xff5555;
-    public const int Yellow = 0xffff00;
-    public const int Blue = 0x5588ff;
-    public const int Orange = 0xff9500;
-    public const int Pink = 0xff77aa;
+    // Gruvbox bright accent colors
+    public const int Red = 0xfb4934;      // bright red
+    public const int Green = 0xb8bb26;    // bright green
+    public const int Yellow = 0xfabd2f;   // bright yellow
+    public const int Blue = 0x83a598;     // bright blue
+    public const int Purple = 0xd3869b;   // bright purple
+    public const int Aqua = 0x8ec07c;     // bright aqua
+    public const int Orange = 0xfe8019;   // bright orange
 
     public static TesseraTheme Default => new()
     {
@@ -44,7 +43,7 @@ internal static class FocusFlowTheme
         {
             Default = Foreground(FgMuted),
             Strong = Foreground(FgDim),
-            Focused = Foreground(Cyan).WithBold(),
+            Focused = Foreground(Yellow).WithBold(),
             Error = Foreground(Red).WithBold()
         },
         State = new TesseraThemeStateTokens
@@ -56,8 +55,8 @@ internal static class FocusFlowTheme
         },
         Accent = new TesseraThemeAccentTokens
         {
-            Primary = Foreground(Cyan).WithBold(),
-            Secondary = Foreground(Magenta).WithBold()
+            Primary = Foreground(Orange).WithBold(),
+            Secondary = Foreground(Aqua).WithBold()
         },
         Selection = new TesseraThemeSelectionTokens
         {
@@ -66,9 +65,9 @@ internal static class FocusFlowTheme
         },
         Focus = new TesseraThemeFocusTokens
         {
-            Ring = Foreground(Cyan).WithBold(),
-            Title = Foreground(Cyan).WithBold(),
-            Border = Foreground(Cyan).WithBold(),
+            Ring = Foreground(Yellow).WithBold(),
+            Title = Foreground(Yellow).WithBold(),
+            Border = Foreground(Yellow).WithBold(),
             Marker = "●"
         }
     };
@@ -98,12 +97,12 @@ internal static class FocusFlowTheme
     {
         TimerMode.Work => Red,
         TimerMode.ShortBreak => Green,
-        TimerMode.LongBreak => Magenta,
+        TimerMode.LongBreak => Purple,
         _ => Red
     };
 
     public static TesseraStyle ModeTitle(TimerMode mode) => Foreground(ModeColor(mode)).WithBold();
-    public static TesseraStyle ModeFill(TimerMode mode) => ForegroundBackground(0x000000, ModeColor(mode)).WithBold();
+    public static TesseraStyle ModeFill(TimerMode mode) => ForegroundBackground(Bg, ModeColor(mode)).WithBold();
     public static TesseraStyle ModeBar(TimerMode mode) => Foreground(ModeColor(mode)).WithBold();
 
     private static (byte R, byte G, byte B) Split(int color)

@@ -37,22 +37,22 @@ internal sealed class FocusFlowApp : TesseraApp
 
     private readonly StatusBar _footer = new() { Fill = ' ' };
 
-    // ASCII art digits (5 lines tall)
+    // Clean ASCII art digits (5 lines tall)
     private static readonly string[][] Digits =
     [
-        ["█▀▀█", "█  █", "█  █", "█  █", "█▄▄█"], // 0
-        ["  ▄█", "   █", "   █", "   █", "   █"], // 1
-        ["█▀▀█", "   █", "█▀▀▀", "█   ", "█▄▄▄"], // 2
-        ["█▀▀█", "   █", " ▀▀█", "   █", "█▄▄█"], // 3
-        ["█  █", "█  █", "▀▀▀█", "   █", "   █"], // 4
-        ["█▀▀▀", "█   ", "▀▀▀█", "   █", "▄▄▄█"], // 5
-        ["█▀▀▀", "█   ", "█▀▀█", "█  █", "█▄▄█"], // 6
-        ["▀▀▀█", "   █", "   █", "   █", "   █"], // 7
-        ["█▀▀█", "█  █", "█▀▀█", "█  █", "█▄▄█"], // 8
-        ["█▀▀█", "█  █", "▀▀▀█", "   █", "█▄▄█"], // 9
+        [" ██▀▀██ ", "██    ██", "██    ██", "██    ██", " ██▄▄██ "], // 0
+        ["   ██   ", "  ███   ", "   ██   ", "   ██   ", "  ████  "], // 1
+        [" ██▀▀██ ", "     ██ ", "  ▄▄██  ", " ██     ", " ███████"], // 2
+        [" ██▀▀██ ", "     ██ ", "   ▀▀██ ", "     ██ ", " ██▄▄██ "], // 3
+        [" ██  ██ ", " ██  ██ ", " ███████", "     ██ ", "     ██ "], // 4
+        [" ███████", " ██     ", " ██▀▀██ ", "     ██ ", " ██▄▄██ "], // 5
+        [" ██▀▀▀  ", " ██     ", " ██▀▀██ ", " ██  ██ ", " ██▄▄██ "], // 6
+        [" ███████", "     ██ ", "    ██  ", "   ██   ", "   ██   "], // 7
+        [" ██▀▀██ ", " ██  ██ ", " ██▀▀██ ", " ██  ██ ", " ██▄▄██ "], // 8
+        [" ██▀▀██ ", " ██  ██ ", " ██▄▄██ ", "     ██ ", " ██▄▄██ "], // 9
     ];
 
-    private static readonly string[] Colon = ["    ", " ██ ", "    ", " ██ ", "    "];
+    private static readonly string[] Colon = ["        ", "   ██   ", "        ", "   ██   ", "        "];
 
     public FocusFlowApp()
     {
@@ -125,26 +125,26 @@ internal sealed class FocusFlowApp : TesseraApp
         _progressBar.LabelStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Fg).WithBold();
         _progressBar.TrackStyle = FocusFlowTheme.Foreground(FocusFlowTheme.FgMuted);
 
-        _statsCard.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Cyan).WithBold();
+        _statsCard.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Aqua).WithBold();
         _statsCard.BorderStyleText = FocusFlowTheme.Foreground(FocusFlowTheme.FgMuted);
         _statsCard.KeyStyle = FocusFlowTheme.Foreground(FocusFlowTheme.FgDim);
-        _statsCard.ValueStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Cyan).WithBold();
+        _statsCard.ValueStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Aqua).WithBold();
 
         _footer.LeftTextStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Green).WithBold();
         _footer.RightTextStyle = FocusFlowTheme.Foreground(FocusFlowTheme.FgDim);
-        _footer.FillStyle = FocusFlowTheme.Background(FocusFlowTheme.Bg);
     }
 
     private void RefreshControls()
     {
+        // Nerd font icons:  focus,  coffee/break,  sleep/long
         var modeText = _state.Mode switch
         {
-            TimerMode.Work => "FOCUS",
-            TimerMode.ShortBreak => "BREAK",
-            TimerMode.LongBreak => "LONG BREAK",
-            _ => "FOCUS"
+            TimerMode.Work => " focus",
+            TimerMode.ShortBreak => " break",
+            TimerMode.LongBreak => " long break",
+            _ => " focus"
         };
-        _timerPanel.Title = modeText.ToLowerInvariant();
+        _timerPanel.Title = modeText;
         _timerPanel.TitleStyle = FocusFlowTheme.ModeTitle(_state.Mode);
 
         // Build ASCII time display
@@ -158,11 +158,12 @@ internal sealed class FocusFlowApp : TesseraApp
         var asciiLines = new string[5];
         for (var i = 0; i < 5; i++)
         {
-            asciiLines[i] = $"  {Digits[m1][i]} {Digits[m2][i]} {Colon[i]} {Digits[s1][i]} {Digits[s2][i]}";
+            asciiLines[i] = $"{Digits[m1][i]}{Digits[m2][i]}{Colon[i]}{Digits[s1][i]}{Digits[s2][i]}";
         }
 
-        var status = _state.IsRunning ? "▶ RUNNING" : "▌▌ PAUSED";
-        var session = _state.SessionDisplay;
+        // Nerd font:  play,  pause
+        var status = _state.IsRunning ? " running" : " paused";
+        var session = _state.SessionDisplay.ToLowerInvariant();
 
         _timerPanel.Text = string.Join('\n',
             "",
@@ -172,7 +173,7 @@ internal sealed class FocusFlowApp : TesseraApp
             asciiLines[3],
             asciiLines[4],
             "",
-            $"  {status}   {session}");
+            $"{status}  ·  {session}");
         _timerPanel.TextStyle = FocusFlowTheme.ModeTitle(_state.Mode);
 
         _progressBar.SetValue(_state.Progress);
@@ -181,12 +182,12 @@ internal sealed class FocusFlowApp : TesseraApp
         _statsCard.SetItems(_state.BuildStats());
 
         var hint = !_state.IsRunning && _state.Progress == 0
-            ? "[SPACE] start"
+            ? "󱁐 start"
             : _state.IsRunning
-                ? "[SPACE] pause"
-                : "[SPACE] resume";
-        _footer.LeftText = $" {hint}  [r] reset  [s] skip  [q] quit ";
-        _footer.RightText = $" {_state.CompletedSessions} pomodoros  {_state.TotalWorkMinutes}m focused ";
+                ? "󱁐 pause"
+                : "󱁐 resume";
+        _footer.LeftText = $" {hint}   r reset   s skip   q quit ";
+        _footer.RightText = $"  {_state.CompletedSessions}    {_state.TotalWorkMinutes}m ";
     }
 }
 
