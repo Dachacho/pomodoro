@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "9WJWdczOENE=",
+  "success": true,
+  "projectFilePath": "/Users/mr.mgeli/Desktop/tessera-test/MyApp/MyApp.csproj",
+  "expectedPackageFiles": [
+    "/Users/mr.mgeli/.nuget/packages/tessera/1.0.0-alpha.1/tessera.1.0.0-alpha.1.nupkg.sha512"
+  ],
+  "logs": []
+}

@@ -1,0 +1,41 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "MyApp/1.0.0": {
+        "dependencies": {
+          "Tessera": "1.0.0-alpha.1"
+        },
+        "runtime": {
+          "MyApp.dll": {}
+        }
+      },
+      "Tessera/1.0.0-alpha.1": {
+        "runtime": {
+          "lib/net10.0/Tessera.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "MyApp/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Tessera/1.0.0-alpha.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Ejpo/DuTgGliaNNmgcm/sx8GZPQXXmMMnUasy2sVtH6xr6Qk8QuA3YuvNO8KQ+QJ1F0keHJxGoBuXdpinpAkmA==",
+      "path": "tessera/1.0.0-alpha.1",
+      "hashPath": "tessera.1.0.0-alpha.1.nupkg.sha512"
+    }
+  }
+}
