@@ -15,3 +15,5 @@
 /Users/mr.mgeli/Desktop/tessera-test/MyApp/obj/Debug/net10.0/MyApp.pdb
 /Users/mr.mgeli/Desktop/tessera-test/MyApp/obj/Debug/net10.0/MyApp.genruntimeconfig.cache
 /Users/mr.mgeli/Desktop/tessera-test/MyApp/obj/Debug/net10.0/ref/MyApp.dll
+/Users/mr.mgeli/Desktop/tessera-test/MyApp/bin/Debug/net10.0/Tessera.pdb
+/Users/mr.mgeli/Desktop/tessera-test/MyApp/bin/Debug/net10.0/Tessera.xml

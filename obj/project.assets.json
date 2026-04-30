@@ -2,42 +2,28 @@
   "version": 3,
   "targets": {
     "net10.0": {
-      "Tessera/1.0.0-alpha.1": {
-        "type": "package",
+      "Tessera/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
         "compile": {
-          "lib/net10.0/Tessera.dll": {
-            "related": ".xml"
-          }
+          "bin/placeholder/Tessera.dll": {}
         },
         "runtime": {
-          "lib/net10.0/Tessera.dll": {
-            "related": ".xml"
-          }
+          "bin/placeholder/Tessera.dll": {}
         }
       }
     }
   },
   "libraries": {
-    "Tessera/1.0.0-alpha.1": {
-      "sha512": "Ejpo/DuTgGliaNNmgcm/sx8GZPQXXmMMnUasy2sVtH6xr6Qk8QuA3YuvNO8KQ+QJ1F0keHJxGoBuXdpinpAkmA==",
-      "type": "package",
-      "path": "tessera/1.0.0-alpha.1",
-      "files": [
-        ".nupkg.metadata",
-        ".signature.p7s",
-        "LICENSE",
-        "README.md",
-        "lib/net10.0/Tessera.dll",
-        "lib/net10.0/Tessera.xml",
-        "tessera-nuget-icon.png",
-        "tessera.1.0.0-alpha.1.nupkg.sha512",
-        "tessera.nuspec"
-      ]
+    "Tessera/1.0.0": {
+      "type": "project",
+      "path": "../tessera/src/Tessera/Tessera.csproj",
+      "msbuildProject": "../tessera/src/Tessera/Tessera.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
-      "Tessera >= 1.0.0-alpha.1"
+      "Tessera >= 1.0.0"
     ]
   },
   "packageFolders": {
@@ -64,7 +50,11 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "/Users/mr.mgeli/Desktop/tessera-test/tessera/src/Tessera/Tessera.csproj": {
+              "projectPath": "/Users/mr.mgeli/Desktop/tessera-test/tessera/src/Tessera/Tessera.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -82,12 +72,6 @@
     "frameworks": {
       "net10.0": {
         "targetAlias": "net10.0",
-        "dependencies": {
-          "Tessera": {
-            "target": "Package",
-            "version": "[1.0.0-alpha.1, )"
-          }
-        },
         "imports": [
           "net461",
           "net462",
