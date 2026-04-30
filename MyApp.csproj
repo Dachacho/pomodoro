@@ -5,10 +5,11 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>FocusFlow</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Tessera" Version="1.0.0-alpha.1" />
+    <ProjectReference Include="..\tessera\src\Tessera\Tessera.csproj" />
   </ItemGroup>
 
 </Project>
