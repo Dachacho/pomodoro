@@ -10,7 +10,7 @@ internal sealed class FocusFlowApp : TesseraApp
     private readonly FocusFlowState _state = new();
     private readonly TesseraTheme _theme = FocusFlowTheme.Default;
 
-    // Timer panel (left side)
+    // Main timer display
     private readonly Label _timerPanel = new()
     {
         Title = "timer",
@@ -18,36 +18,28 @@ internal sealed class FocusFlowApp : TesseraApp
         Padding = Thickness.All(1)
     };
 
-    // Progress panel
+    // Progress bar
     private readonly ProgressBar _progressBar = new()
     {
-        Title = "elapsed",
+        Title = "progress",
         Border = BorderStyle.Rounded,
         Padding = Thickness.Symmetric(1, 0),
         ShowFocusMarker = false
     };
 
-    // Session history sparkline
-    private readonly Sparkline _sessionSpark = new()
-    {
-        Title = "session history",
-        Border = BorderStyle.Rounded,
-        Padding = Thickness.Symmetric(1, 0)
-    };
-
-    // Stats panel (right side)
+    // Stats panel
     private readonly StatsCard _statsCard = new()
     {
-        Title = "stats",
+        Title = "session",
         Border = BorderStyle.Rounded,
         Padding = Thickness.All(1),
         ShowFocusMarker = false
     };
 
-    // Mode selector panel
-    private readonly Label _modePanel = new()
+    // Action panel - tells user what to do
+    private readonly Label _actionPanel = new()
     {
-        Title = "mode",
+        Title = "action",
         Border = BorderStyle.Rounded,
         Padding = Thickness.Symmetric(1, 0)
     };
@@ -55,15 +47,12 @@ internal sealed class FocusFlowApp : TesseraApp
     // Keybinds panel
     private readonly Label _keysPanel = new()
     {
-        Title = "keys",
+        Title = "controls",
         Border = BorderStyle.Rounded,
         Padding = Thickness.Symmetric(1, 0)
     };
 
     private readonly StatusBar _footer = new() { Fill = '─' };
-
-    // Track session durations for sparkline
-    private readonly List<double> _sessionHistory = [0, 0, 0, 0, 0, 0, 0, 0];
 
     public FocusFlowApp()
     {
@@ -83,41 +72,37 @@ internal sealed class FocusFlowApp : TesseraApp
             case KeyPressed key2 when key2.IsCharacter('c', ModifierKeys.Ctrl):
                 return TesseraEffects.Quit;
 
+            // SPACE = main action (start/pause)
             case KeyPressed key when key.IsCharacter(' '):
             case KeyPressed key2 when key2.Is(Key.Enter):
-            case KeyPressed key3 when key3.IsCharacter('p'):
                 _state.ToggleRunning();
                 return null;
 
+            // R = reset current timer
             case KeyPressed key when key.IsCharacter('r'):
                 _state.Reset();
                 return null;
 
+            // S = skip to next phase
             case KeyPressed key when key.IsCharacter('s'):
-            case KeyPressed key2 when key2.IsCharacter('n'):
-                var prevSessions = _state.CompletedSessions;
                 _state.Skip();
-                if (_state.CompletedSessions > prevSessions)
-                    RecordSession();
                 return null;
 
-            case KeyPressed key when key.IsCharacter('w'):
+            // 1/2/3 = quick switch modes (stops timer, resets)
+            case KeyPressed key when key.IsCharacter('1'):
                 _state.SetMode(TimerMode.Work);
                 return null;
 
-            case KeyPressed key when key.IsCharacter('b'):
+            case KeyPressed key when key.IsCharacter('2'):
                 _state.SetMode(TimerMode.ShortBreak);
                 return null;
 
-            case KeyPressed key when key.IsCharacter('l'):
+            case KeyPressed key when key.IsCharacter('3'):
                 _state.SetMode(TimerMode.LongBreak);
                 return null;
 
             case TickMessage:
-                var prev = _state.CompletedSessions;
                 _state.Tick();
-                if (_state.CompletedSessions > prev)
-                    RecordSession();
                 return null;
 
             default:
@@ -133,30 +118,22 @@ internal sealed class FocusFlowApp : TesseraApp
         {
             window.Padding(1);
             window.Gap(1);
-            window.Body(body => body.Column(main =>
+            window.Body(body => body.Row(main =>
             {
-                // Top row: Timer + Stats
-                main.Weighted(3, top => top.Row(row =>
+                // Left side: Timer + Progress
+                main.Weighted(2, left => left.Column(stack =>
                 {
-                    // Left: Timer display
-                    row.Weighted(2, left => left.Column(stack =>
-                    {
-                        stack.Weighted(2, _timerPanel);
-                        stack.Fixed(4, _progressBar);
-                    }));
-                    // Right: Stats + Mode
-                    row.Weighted(1, right => right.Column(stack =>
-                    {
-                        stack.Weighted(1, _statsCard);
-                        stack.Fixed(5, _modePanel);
-                    }), new Thickness(1, 0, 0, 0));
+                    stack.Weighted(1, _timerPanel);
+                    stack.Fixed(4, _progressBar);
+                    stack.Fixed(6, _actionPanel);
                 }));
-                // Bottom row: History + Keys
-                main.Fixed(6, bottom => bottom.Row(row =>
+
+                // Right side: Stats + Keys
+                main.Weighted(1, right => right.Column(stack =>
                 {
-                    row.Weighted(2, _sessionSpark);
-                    row.Fixed(32, _keysPanel, new Thickness(1, 0, 0, 0));
-                }));
+                    stack.Weighted(1, _statsCard);
+                    stack.Fixed(7, _keysPanel);
+                }), new Thickness(1, 0, 0, 0));
             }));
             window.Footer(1, _footer);
         });
@@ -166,105 +143,112 @@ internal sealed class FocusFlowApp : TesseraApp
     {
         _progressBar.ApplyTheme(_theme);
         _statsCard.ApplyTheme(_theme);
-        _sessionSpark.ApplyTheme(_theme);
         _footer.ApplyTheme(_theme);
 
-        // Timer panel - cyan title
-        _timerPanel.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Cyan).WithBold();
-        _timerPanel.BorderStyleText = _theme.Border.Default;
-        _timerPanel.TextStyle = _theme.Text.Primary;
+        // Timer panel
+        _timerPanel.BorderStyleText = FocusFlowTheme.Foreground(FocusFlowTheme.FgMuted);
 
         // Progress bar
         _progressBar.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Yellow).WithBold();
-        _progressBar.BorderStyleText = _theme.Border.Default;
-        _progressBar.LabelStyle = _theme.Text.Primary.WithBold();
+        _progressBar.BorderStyleText = FocusFlowTheme.Foreground(FocusFlowTheme.FgMuted);
+        _progressBar.LabelStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Fg).WithBold();
         _progressBar.TrackStyle = FocusFlowTheme.Foreground(FocusFlowTheme.FgMuted);
 
-        // Session sparkline
-        _sessionSpark.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Blue).WithBold();
-        _sessionSpark.BorderStyleText = _theme.Border.Default;
-        _sessionSpark.DataStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Blue).WithBold();
+        // Stats card
+        _statsCard.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Cyan).WithBold();
+        _statsCard.BorderStyleText = FocusFlowTheme.Foreground(FocusFlowTheme.FgMuted);
+        _statsCard.KeyStyle = FocusFlowTheme.Foreground(FocusFlowTheme.FgDim);
+        _statsCard.ValueStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Cyan).WithBold();
 
-        // Stats card - magenta title
-        _statsCard.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Magenta).WithBold();
-        _statsCard.BorderStyleText = _theme.Border.Default;
-        _statsCard.KeyStyle = _theme.Text.Muted;
-        _statsCard.ValueStyle = _theme.Accent.Primary;
+        // Action panel
+        _actionPanel.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Green).WithBold();
+        _actionPanel.BorderStyleText = FocusFlowTheme.Foreground(FocusFlowTheme.FgMuted);
 
-        // Mode panel - green title
-        _modePanel.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Green).WithBold();
-        _modePanel.BorderStyleText = _theme.Border.Default;
-        _modePanel.TextStyle = _theme.Text.Secondary;
-
-        // Keys panel - orange title
+        // Keys panel
         _keysPanel.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Orange).WithBold();
-        _keysPanel.BorderStyleText = _theme.Border.Default;
-        _keysPanel.TextStyle = _theme.Text.Muted;
+        _keysPanel.BorderStyleText = FocusFlowTheme.Foreground(FocusFlowTheme.FgMuted);
+        _keysPanel.TextStyle = FocusFlowTheme.Foreground(FocusFlowTheme.FgDim);
 
         // Footer
         _footer.LeftTextStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Cyan).WithBold();
-        _footer.RightTextStyle = _theme.Text.Muted;
+        _footer.RightTextStyle = FocusFlowTheme.Foreground(FocusFlowTheme.FgDim);
         _footer.FillStyle = FocusFlowTheme.Foreground(FocusFlowTheme.FgMuted);
     }
 
     private void RefreshControls()
     {
-        // Timer panel - big ASCII time with mode indicator
-        var modeIcon = _state.Mode switch
+        // Timer panel - show current state clearly
+        var modeText = _state.Mode switch
         {
-            TimerMode.Work => "◉ FOCUS",
-            TimerMode.ShortBreak => "◎ BREAK",
-            TimerMode.LongBreak => "◈ LONG BREAK",
-            _ => "◉ FOCUS"
+            TimerMode.Work => "🔴 FOCUS TIME",
+            TimerMode.ShortBreak => "🟢 SHORT BREAK",
+            TimerMode.LongBreak => "🟣 LONG BREAK",
+            _ => "FOCUS"
         };
-        var statusIcon = _state.IsRunning ? "▶" : "⏸";
-        var statusText = _state.IsRunning ? "running" : "paused";
 
-        _timerPanel.Title = $"timer │ {modeIcon.ToLowerInvariant()}";
+        _timerPanel.Title = modeText.ToLowerInvariant();
         _timerPanel.TitleStyle = FocusFlowTheme.ModeTitle(_state.Mode);
+
+        var statusLine = _state.IsRunning
+            ? "▶▶▶  RUNNING  ▶▶▶"
+            : "⏸⏸⏸  PAUSED  ⏸⏸⏸";
+
         _timerPanel.Text = string.Join('\n',
             "",
-            $"        {_state.TimeDisplay}",
             "",
-            $"     {statusIcon} {statusText}",
+            $"          {_state.TimeDisplay}",
             "",
-            $"     {_state.SessionDisplay.ToLowerInvariant()}");
+            $"       {statusLine}",
+            "",
+            $"     {_state.SessionDisplay}");
+        _timerPanel.TextStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Fg).WithBold();
 
         // Progress bar
         _progressBar.SetValue(_state.Progress);
         _progressBar.FillStyle = FocusFlowTheme.ModeBar(_state.Mode);
 
+        // Action panel - clear instruction
+        string actionText;
+        TesseraStyle actionStyle;
+
+        if (!_state.IsRunning && _state.Progress == 0)
+        {
+            actionText = ">>> PRESS [SPACE] TO START <<<";
+            actionStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Green).WithBold();
+        }
+        else if (_state.IsRunning)
+        {
+            actionText = "timer running... [SPACE] to pause";
+            actionStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Yellow).WithBold();
+        }
+        else
+        {
+            actionText = "[SPACE] resume  [R] reset  [S] skip";
+            actionStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Cyan).WithBold();
+        }
+
+        _actionPanel.Text = string.Join('\n',
+            "",
+            $"  {actionText}",
+            "",
+            $"  switch: [1] focus  [2] break  [3] long");
+        _actionPanel.TextStyle = actionStyle;
+
         // Stats
         _statsCard.SetItems(_state.BuildStats());
 
-        // Mode panel
-        var workMark = _state.Mode == TimerMode.Work ? "●" : "○";
-        var breakMark = _state.Mode == TimerMode.ShortBreak ? "●" : "○";
-        var longMark = _state.Mode == TimerMode.LongBreak ? "●" : "○";
-        _modePanel.Text = string.Join('\n',
-            $" {workMark} [w] work      25m",
-            $" {breakMark} [b] break      5m",
-            $" {longMark} [l] long      15m");
-
-        // Session sparkline
-        _sessionSpark.SetSamples(_sessionHistory);
-
         // Keys panel
         _keysPanel.Text = string.Join('\n',
-            " [space] toggle  [r] reset",
-            " [s] skip        [q] quit",
-            " [w/b/l] switch mode");
+            "",
+            "  [SPACE]  start / pause",
+            "  [R]      reset timer",
+            "  [S]      skip to next",
+            "  [1/2/3]  switch mode",
+            "  [Q]      quit");
 
         // Footer
-        var elapsed = (_state.TotalSeconds - _state.SecondsRemaining) / 60;
-        _footer.LeftText = $" focusflow ";
-        _footer.RightText = $"{_state.CompletedSessions} sessions │ {_state.TotalWorkMinutes}m focused │ {elapsed}m elapsed ";
-    }
-
-    private void RecordSession()
-    {
-        _sessionHistory.RemoveAt(0);
-        _sessionHistory.Add(_state.Mode == TimerMode.Work ? 25 : (_state.Mode == TimerMode.ShortBreak ? 5 : 15));
+        _footer.LeftText = $" focusflow │ {_state.ModeDisplay.ToLowerInvariant()} ";
+        _footer.RightText = $" {_state.CompletedSessions} sessions │ {_state.TotalWorkMinutes}m total ";
     }
 }
 
