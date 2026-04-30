@@ -183,7 +183,7 @@ internal sealed class FocusFlowApp : TesseraApp
         // Session sparkline
         _sessionSpark.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Blue).WithBold();
         _sessionSpark.BorderStyleText = _theme.Border.Default;
-        _sessionSpark.FillStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Blue).WithBold();
+        _sessionSpark.DataStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Blue).WithBold();
 
         // Stats card - magenta title
         _statsCard.TitleStyle = FocusFlowTheme.Foreground(FocusFlowTheme.Magenta).WithBold();
