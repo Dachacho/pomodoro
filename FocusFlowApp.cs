@@ -167,9 +167,9 @@ internal sealed class FocusFlowApp : TesseraApp
         // Timer panel - show current phase
         var modeText = _state.Mode switch
         {
-            TimerMode.Work => "🔴 FOCUS",
-            TimerMode.ShortBreak => "🟢 BREAK",
-            TimerMode.LongBreak => "🟣 LONG BREAK",
+            TimerMode.Work => "FOCUS",
+            TimerMode.ShortBreak => "BREAK",
+            TimerMode.LongBreak => "LONG BREAK",
             _ => "FOCUS"
         };
 

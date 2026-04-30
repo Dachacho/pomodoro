@@ -119,11 +119,12 @@ internal sealed class FocusFlowState
         SecondsRemaining = TotalSeconds;
     }
 
+    public int UntilLongBreak => SessionsBeforeLongBreak - (CompletedSessions % SessionsBeforeLongBreak);
+
     public List<StatItem> BuildStats() =>
     [
-        new("Sessions", CompletedSessions.ToString()),
-        new("Focus Time", $"{TotalWorkMinutes} min"),
-        new("Current", ModeDisplay),
-        new("Streak", $"{CompletedSessions % SessionsBeforeLongBreak}/{SessionsBeforeLongBreak}")
+        new("Pomodoros", CompletedSessions.ToString()),
+        new("Focus", $"{TotalWorkMinutes}m"),
+        new("Long Break", $"in {UntilLongBreak}")
     ];
 }
