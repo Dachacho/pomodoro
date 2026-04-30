@@ -10,7 +10,8 @@ var app = TesseraApplication.CreateBuilder()
         {
             AltScreen = true,
             WindowTitle = "focusflow",
-            EnableFocusReporting = true
+            EnableFocusReporting = true,
+            EnableBracketedPaste = true
         };
     })
     .Build();
