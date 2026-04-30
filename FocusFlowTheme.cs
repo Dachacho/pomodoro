@@ -5,24 +5,25 @@ namespace FocusFlow;
 
 internal static class FocusFlowTheme
 {
-    // btop-inspired dark theme with vibrant accents
-    public const int Bg = 0x0d0d0d;
-    public const int BgPanel = 0x1a1a1a;
-    public const int BgHighlight = 0x262626;
-    public const int BgSelected = 0x333333;
+    // Bright colors for transparent terminals
+    public const int Bg = 0x1a1a2e;
+    public const int BgPanel = 0x16213e;
+    public const int BgHighlight = 0x0f3460;
 
-    public const int Fg = 0xe6e6e6;
-    public const int FgDim = 0x808080;
-    public const int FgMuted = 0x4d4d4d;
+    // Bright, saturated foreground colors
+    public const int Fg = 0xffffff;
+    public const int FgDim = 0xcccccc;
+    public const int FgMuted = 0x888888;
 
-    // btop-style accents
-    public const int Cyan = 0x6be5fd;
-    public const int Magenta = 0xd68ad6;
-    public const int Green = 0x97e768;
-    public const int Red = 0xf76e6e;
-    public const int Yellow = 0xf7d26a;
-    public const int Blue = 0x7aa2f7;
-    public const int Orange = 0xf7a55d;
+    // Vivid accent colors - high saturation for visibility
+    public const int Cyan = 0x00fff5;
+    public const int Magenta = 0xff00ff;
+    public const int Green = 0x00ff88;
+    public const int Red = 0xff5555;
+    public const int Yellow = 0xffff00;
+    public const int Blue = 0x5588ff;
+    public const int Orange = 0xff9500;
+    public const int Pink = 0xff77aa;
 
     public static TesseraTheme Default => new()
     {
@@ -60,7 +61,7 @@ internal static class FocusFlowTheme
         },
         Selection = new TesseraThemeSelectionTokens
         {
-            Background = Background(BgSelected),
+            Background = Background(BgHighlight),
             Foreground = Foreground(Fg).WithBold()
         },
         Focus = new TesseraThemeFocusTokens
@@ -102,7 +103,7 @@ internal static class FocusFlowTheme
     };
 
     public static TesseraStyle ModeTitle(TimerMode mode) => Foreground(ModeColor(mode)).WithBold();
-    public static TesseraStyle ModeFill(TimerMode mode) => ForegroundBackground(Bg, ModeColor(mode)).WithBold();
+    public static TesseraStyle ModeFill(TimerMode mode) => ForegroundBackground(0x000000, ModeColor(mode)).WithBold();
     public static TesseraStyle ModeBar(TimerMode mode) => Foreground(ModeColor(mode)).WithBold();
 
     private static (byte R, byte G, byte B) Split(int color)
