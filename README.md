@@ -1,6 +1,6 @@
 # FocusFlow
 
-A pomodoro timer TUI built to test out [Tessera](../tessera), a .NET terminal UI framework.
+A pomodoro timer TUI built to test out [Tessera](https://github.com/georgetsouvaltzis/tessera), a .NET terminal UI framework.
 
 ## Screenshot
 
