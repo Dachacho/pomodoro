@@ -6,14 +6,10 @@ var app = TesseraApplication.CreateBuilder()
     .ConfigureRuntime(static runtime =>
     {
         runtime.Theme = FocusFlowTheme.Default;
-        runtime.PointerActivationPolicy = PointerActivationPolicy.SingleClick;
         runtime.Screen = new ScreenOptions
         {
             AltScreen = true,
-            WindowTitle = "FocusFlow - Pomodoro Timer",
-            EnableFocusReporting = true,
-            EnableBracketedPaste = true,
-            MouseTracking = MouseTrackingMode.AllMotion
+            WindowTitle = "focusflow"
         };
     })
     .Build();
