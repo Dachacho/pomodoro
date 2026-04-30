@@ -9,7 +9,8 @@ var app = TesseraApplication.CreateBuilder()
         runtime.Screen = new ScreenOptions
         {
             AltScreen = true,
-            WindowTitle = "focusflow"
+            WindowTitle = "focusflow",
+            EnableFocusReporting = true
         };
     })
     .Build();
